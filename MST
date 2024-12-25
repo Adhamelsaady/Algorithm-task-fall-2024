@@ -1,0 +1,90 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define int long long
+#define all(v) v.begin() , v.end()
+typedef long long ll;
+
+void RUN() {
+    ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+#ifndef ONLINE_JUDGE
+    freopen("input.txt", "r" , stdin);
+    freopen("output.txt","w" , stdout);
+#endif
+}
+
+////////////////////////////////////////////////////////////
+
+
+
+struct DSU {
+    int cnt;
+    vector<int>parent, sizes;
+    void init(int n){
+        cnt = n;
+        parent.resize(n + 1);
+        sizes.resize(n + 1);
+        for (int i = 1; i <= n; i++){
+            parent[i] = i;
+            sizes[i] = 1;
+        }
+    }
+    int find_root(int u){
+        if (parent[u] == u)
+            return u;
+        return parent[u] = find_root(parent[u]);
+    }
+    bool merge(int u, int v){
+        int root_u = find_root(u);
+        int root_v = find_root(v);
+        // root v is the main
+        if (root_u == root_v)
+            return 0;
+        if (sizes[root_u] > sizes[root_v])
+            swap(root_u, root_v);
+        parent[root_u] = root_v;
+        sizes[root_v] += sizes[root_u];
+        cnt--;
+        return 1;
+    }
+    bool is_connected(int u, int v) {
+        return find_root(u) == find_root(v);
+    }
+};
+
+
+void AC()
+{
+    int n , m;
+    cin >> n >> m;
+    DSU d1;
+    d1.init(n);
+    vector<pair <int , pair<int,int> >> mst;
+    for(int i = 0 ; i < m ; i++){
+        int u , v , w;
+        cin >> u >> v >> w;
+        mst.push_back({w , {u , v}});
+    }
+    sort(all(mst));
+    int ans = 0;
+    for(auto &[w , node] : mst){
+        int u = node.first , v = node.second;
+        if(d1.merge(u , v))
+            ans += w;
+    }
+    cout << ans << '\n';
+}
+
+
+signed main() {
+    RUN();
+    int testCases = 1;
+
+ //   cin >> testCases;
+    for (int testCase = 1 ; testCase <= testCases ; ++testCase) {
+        AC();
+    }
+
+    return 0;
+}
